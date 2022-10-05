@@ -1,7 +1,7 @@
 import { BinanceClient } from "ccxws";
 
-export let clients = {}; // map userId to the exchange client
-export let marketMap = {}; //map userId to the market
+let clients = {}; // map userId to the exchange client
+let marketMap = {}; //map userId to the market
 
 export let myClients = {}; //map userId to the frontend clients
 export let sockets = {}; //map userId(front-end : server) to userId(server : ccxws)
@@ -66,7 +66,7 @@ export const disconnect = (id) => {
 */
 export const closeSocket = (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; //id which corresponding to the ccxws websocket
     disconnect(id);
     res.status(201).json({
       status: "success",
