@@ -39,6 +39,22 @@ app.use((req, res, next) => {
   next();
 });
 
+/*
+To connect with mongoDB
+
+const DB = process.env.DATABASE;
+
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  })
+  .then(() => console.log("Mongo Connected"))
+  .catch((error) => console.log(`${error} did not connect`));
+
+*/
+
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/market", marketRouter);
 
