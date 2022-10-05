@@ -16,8 +16,8 @@ export const getUniqueID = () => {
 
 export const getData = (req, res) => {
   try {
-    const { id, base, quote } = req.params; //choose market
-    const { socketId } = req.body;
+    const { id, base, quote, socketId } = req.params; //choose market
+    console.log("Socket Id", socketId);
     //check validity ( if () throw "Fields for MARKET Object not Correct"; )
     const market = {
       id: id,
@@ -34,7 +34,8 @@ export const getData = (req, res) => {
 
     binance.on("trade", (trade) => {
       let trade_ = JSON.stringify(trade);
-      sockets[socketId].sendUTF(trade_);
+      //console.log(trade_);
+      myClients[socketId].send(trade_);
     });
     //binance.on("l2snapshot", (snapshot) => console.log(snapshot));
 
@@ -48,6 +49,7 @@ export const getData = (req, res) => {
       },
     });
   } catch (err) {
+    console.log("ERROR in GETDATA");
     res.status(404).json({ message: err.message });
   }
 };

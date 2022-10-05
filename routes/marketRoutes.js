@@ -1,10 +1,10 @@
 import express from "express";
-//import { protect } from "../controllers/userController.js";
+import { protect } from "../controllers/userController.js";
 import { getData, closeSocket } from "../controllers/marketController.js";
 
 const router = express.Router();
 
-router.get("/:id/:base/:quote", getData);
+router.get("/:id/:base/:quote/:socketId", protect, getData);
 router.patch("/:id", closeSocket);
 
 export default router;

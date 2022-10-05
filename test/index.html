@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket Thing2</title>
+  </head>
+  <body>
+    <button onclick="start()">Start Streaming</button>
+    <button onclick="stop()">Stop Streaming</button>
+  </body>
+  <script>
+    // Create WebSocket connection.
+    const socket = new WebSocket("ws://localhost:3000");
+    let socketId, ccxwsId;
+    // Connection opened
+    socket.addEventListener("open", function (event) {
+      console.log("Connected to WS Server");
+    });
+
+    // Listen for messages
+    socket.addEventListener("message", function (event) {
+      socketId = event.data;
+      console.log("Message from server ", event.data);
+    });
+    const start = () => {
+      if (socketId) {
+        console.log(socketId);
+        fetch(
+          `http://localhost:3000/api/v1/market/BTCUSDT/BTC/USDT/${socketId}`,
+          {
+            method: "GET",
+            mode: "no-cors",
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+          }
+        )
+          .then((response) => {
+            response.json();
+          })
+          .then((response) => (ccxwsId = response.data))
+          .catch((err) => console.log(err));
+      } else {
+        console.log("Websocket connection not established");
+      }
+    };
+
+    const stop = () => {
+      if (ccxwsId) {
+        fetch(`http://localhost:3000/api/v1/market/${ccxwsId}`, {
+          method: "PATCH",
+          mode: "no-cors",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+          .then((response) => console.log("Unsubscribed Successfully"))
+          .catch((err) => console.log(err));
+      } else {
+        console.log("No subscription made!!!");
+      }
+    };
+  </script>
+</html>

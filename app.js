@@ -1,5 +1,5 @@
 import express from "express";
-import cors from "cors";
+//import cors from "cors";
 import bodyParser from "body-parser";
 import userRouter from "./routes/userRoutes.js";
 import marketRouter from "./routes/marketRoutes.js";
@@ -32,7 +32,12 @@ const PORT = 3000;
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
+//app.use(cors());
+app.use((req, res, next) => {
+  res.removeHeader("Cross-Origin-Resource-Policy");
+  res.removeHeader("Cross-Origin-Embedder-Policy");
+  next();
+});
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/market", marketRouter);
