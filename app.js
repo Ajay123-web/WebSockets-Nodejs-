@@ -3,16 +3,38 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import userRouter from "./routes/userRoutes.js";
 import marketRouter from "./routes/marketRoutes.js";
+import http from "http";
+import { WebSocketServer } from "ws";
+import {
+  getUniqueID,
+  myClients,
+  sockets,
+  disconnect,
+} from "./controllers/marketController.js";
 
-export const app = express();
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server: server });
 
-const PORT = process.env.PORT || 3000;
+wss.on("connection", function connection(ws) {
+  const userId = getUniqueID();
+  ws.send(userId); //send the userId back to client
+  myClients[userId] = ws;
+  ws.on("close", function (connection) {
+    delete myClients[userId];
+    if (sockets[userId]) {
+      disconnect(sockets[userId]);
+    }
+  });
+});
+
+const PORT = 3000;
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
-//app.use("/api/v1/user", userRouter);
+app.use("/api/v1/user", userRouter);
 app.use("/api/v1/market", marketRouter);
 
-app.listen(PORT, () => console.log("Server Running"));
+server.listen(PORT, () => console.log("Server Running"));
